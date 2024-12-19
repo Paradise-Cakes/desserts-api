@@ -1,5 +1,5 @@
 locals {
-  lambda_image = "${aws_ecr_repository.desserts_api_lambdas.repository_url}:${var.docker_image_tag}"
+  lambda_image = "${data.aws_ecr_repository.desserts_api_lambdas.repository_url}:${var.docker_image_tag}"
 }
 
 resource "aws_lambda_function" "app" {
