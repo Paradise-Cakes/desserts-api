@@ -30,21 +30,212 @@ jobs:
         run: |
           scripts/ensure-up-to-date.sh
 
-      # - name: Setup Python 3.11.x
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: 3.11.x
+      - name: Setup Python 3.11.x
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11.x
 
-      # - name: Install Poetry
-      #   uses: snok/install-poetry@v1
-      #   with:
-      #     version: 1.4.2
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.4.2
 
-      # - name: Install Dependencies
-      #   run: bash ${GITHUB_WORKSPACE}/ci/install.sh
+      - name: Install Dependencies
+        run: bash ${GITHUB_WORKSPACE}/ci/install.sh
 
-      # - name: Lint
-      #   run: bash ${GITHUB_WORKSPACE}/ci/lint.sh
+      - name: Lint
+        run: bash ${GITHUB_WORKSPACE}/ci/lint.sh
 
       # - name: Test
       #   run: bash ${GITHUB_WORKSPACE}/ci/test.sh
+
+  ecr-build-push-dev-us-east-1:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set GIT variables
+        run: |
+          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+          echo "BRANCH_NAME=`echo ${GITHUB_REF_NAME} | tr / _`" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials for us-east-1 - DEV
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::010526276358:role/desserts-api-development-terraform-deployer
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR us-east-1 - DEV
+        id: login-ecr-east
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Docker build, tag us-east-1 - DEV
+        env:
+          REGISTRY: ${{ steps.login-ecr-east.outputs.registry }}
+        run: |
+          docker build -t 010526276358.dkr.ecr.us-east-1.amazonaws.com/desserts-api-lambdas-us-east-1:${BRANCH_NAME}-${SHORT_SHA} ${GITHUB_WORKSPACE}/lambdas
+
+      - name: Docker push us-east-1 - DEV
+        env:
+          REGISTRY: ${{ steps.login-ecr-east.outputs.registry }}
+        run: |
+          docker push 010526276358.dkr.ecr.us-east-1.amazonaws.com/desserts-api-lambdas-us-east-1:${BRANCH_NAME}-${SHORT_SHA}
+
+  ecr-build-push-prod-us-east-1:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set GIT variables
+        run: |
+          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+          echo "BRANCH_NAME=`echo ${GITHUB_REF_NAME} | tr / _`" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials for us-east-1 - PROD
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::132899756990:role/desserts-api-terraform-deployer
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR us-east-1 - PROD
+        id: login-ecr-east
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Docker build, tag us-east-1 - PROD
+        env:
+          REGISTRY: ${{ steps.login-ecr-east.outputs.registry }}
+        run: |
+          docker build -t 132899756990.dkr.ecr.us-east-1.amazonaws.com/desserts-api-lambdas-us-east-1:${BRANCH_NAME}-${SHORT_SHA} ${GITHUB_WORKSPACE}/lambdas
+
+      - name: Docker push us-east-1 - PROD
+        env:
+          REGISTRY: ${{ steps.login-ecr-east.outputs.registry }}
+        run: |
+          docker push 132899756990.dkr.ecr.us-east-1.amazonaws.com/desserts-api-lambdas-us-east-1:${BRANCH_NAME}-${SHORT_SHA}
+
+  tf-dev:
+    runs-on: ubuntu-latest
+    if: "!contains(github.ref, 'revert')"
+    environment: dev
+    concurrency: tf-dev
+    timeout-minutes: 30
+    needs: ecr-build-push-dev-us-east-1
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Set GIT variables
+        run: |
+          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+          echo "BRANCH_NAME=`echo ${GITHUB_REF_NAME} | tr / _`" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials for us-east-1
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::010526276358:role/desserts-api-development-terraform-deployer
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.0
+        with:
+          terraform_version: 1.2.7
+
+      - name: Terraform Init - DEV
+        id: tf-init-dev
+        run: |
+          cd ${GITHUB_WORKSPACE}/terraform
+          terraform init \
+            --backend-config="bucket=desserts-dev-api-tfstate" \
+            --backend-config="key=desserts-dev-api.tfstate"
+
+      - name: Terraform Plan - DEV
+        id: tf-plan-dev
+        env:
+          TF_VAR_environment: dev
+          TF_VAR_region: us-east-1
+          TF_VAR_docker_image_tag: "${{env.BRANCH_NAME}}-${{env.SHORT_SHA}}"
+          TF_VAR_short_version: "${{env.SHORT_SHA}}"
+        run: |
+          cd ${GITHUB_WORKSPACE}/terraform
+          terraform plan --out tfplan.out
+
+      - name: Terraform Apply - DEV
+        id: tf-apply-dev
+        run: |
+          cd ${GITHUB_WORKSPACE}/terraform
+          terraform apply --auto-approve tfplan.out
+
+  tf-prod:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: prod
+    concurrency: tf-prod
+    timeout-minutes: 30
+    needs: [ecr-build-push-prod-us-east-1, tf-dev]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Set GIT variables
+        run: |
+          echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-7`" >> $GITHUB_ENV
+          echo "BRANCH_NAME=`echo ${GITHUB_REF_NAME} | tr / _`" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials for us-east-1
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: arn:aws:iam::132899756990:role/desserts-api-terraform-deployer
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2.0.0
+        with:
+          terraform_version: 1.2.7
+
+      - name: Terraform Init - PROD
+        id: tf-init-prod
+        run: |
+          cd ${GITHUB_WORKSPACE}/terraform
+          terraform init \
+            --backend-config="bucket=desserts-api-tfstate" \
+            --backend-config="key=desserts-api.tfstate"
+
+      - name: Terraform Plan - PROD
+        id: tf-plan-prod
+        env:
+          TF_VAR_environment: prod
+          TF_VAR_region: us-east-1
+          TF_VAR_docker_image_tag: "${{env.BRANCH_NAME}}-${{env.SHORT_SHA}}"
+          TF_VAR_short_version: "${{env.SHORT_SHA}}"
+        run: |
+          cd ${GITHUB_WORKSPACE}/terraform
+          terraform plan --out tfplan.out
+
+      - name: Terraform Apply - PROD
+        id: tf-apply-prod
+        run: |
+          cd ${GITHUB_WORKSPACE}/terraform
+          terraform apply --auto-approve tfplan.out
