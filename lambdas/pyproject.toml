@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "lambdas"
+version = "0.1.0"
+description = ""
+authors = ["Anthony Viera <anthonyviera4@gmail.com>"]
+
+packages = [
+  { include = "src" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "0.115.3"
+mangum = "^0.17.0"
+boto3 = "^1.34.55"
+aws-lambda-powertools = "2.22.0"
+black = "^24.2.0"
+arrow = "^1.3.0"
+pydantic = "^2.6.4"
+pytest = "^7.1.2"
+requests-mock = "^1.11.0"
+freezegun = "^1.2.1"
+mock = "^5.1.0"
+simplejson = "^3.19.2"
+pytest-cov = "^4.1.0"
+urllib3 = "^1.26.19"
+requests = "^2.32.0"
+uvicorn = "^0.32.1"
+isort = "^5.13.2"
+uuid = "^1.30"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+branch = false
+source = ["src"]
+omit = [
+  "src/api.py",
+]
+
+[tool.coverage.paths]
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 100

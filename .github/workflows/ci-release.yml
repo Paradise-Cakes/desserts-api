@@ -1,0 +1,50 @@
+name: Desserts CI/CD Pipeline
+
+on:
+  push:
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  id-token: write
+  pull-requests: write
+  contents: read
+
+concurrency:
+  group: ${{ github.ref == 'refs/heads/main' && 'main-branch' || 'feature-branches' }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Check if branch is up to date with master
+        run: |
+          scripts/ensure-up-to-date.sh
+
+      # - name: Setup Python 3.11.x
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: 3.11.x
+
+      # - name: Install Poetry
+      #   uses: snok/install-poetry@v1
+      #   with:
+      #     version: 1.4.2
+
+      # - name: Install Dependencies
+      #   run: bash ${GITHUB_WORKSPACE}/ci/install.sh
+
+      # - name: Lint
+      #   run: bash ${GITHUB_WORKSPACE}/ci/lint.sh
+
+      # - name: Test
+      #   run: bash ${GITHUB_WORKSPACE}/ci/test.sh
