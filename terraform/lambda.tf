@@ -22,7 +22,7 @@ resource "aws_lambda_function" "app" {
       DYNAMODB_DESSERTS_TABLE_NAME           = aws_dynamodb_table.desserts.name
       DYNAMODB_DESSERT_TYPE_COUNT_TABLE_NAME = aws_dynamodb_table.dessert_type_count.name
       DYNAMODB_PRICES_TABLE_NAME             = aws_dynamodb_table.prices.name
-      DESSERT_IMAGES_BUCKET_NAME             = aws_s3_bucket.pc_dessert_images_bucket.bucket
+      DESSERT_IMAGES_BUCKET_NAME             = aws_s3_bucket.dessert_images_bucket.bucket
       REGION                                 = "us-east-1"
     }
   }
