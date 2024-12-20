@@ -3,7 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from mangum import Mangum
 
-from src.routes import hello
+from src.routes import (
+    delete_dessert,
+    get_dessert,
+    get_desserts,
+    patch_dessert,
+    post_dessert,
+)
 
 app = FastAPI(title="Desserts API", version="1.0.0", root_path="/v1")
 
@@ -15,7 +21,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(hello.router)
+app.include_router(delete_dessert.router)
+app.include_router(get_dessert.router)
+app.include_router(get_desserts.router)
+app.include_router(post_dessert.router)
+app.include_router(patch_dessert.router)
 
 
 def lambda_handler(event, context):
