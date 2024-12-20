@@ -7,8 +7,8 @@ from src.routes import (
     delete_dessert,
     get_dessert,
     get_desserts,
-    post_dessert,
     patch_dessert,
+    post_dessert,
 )
 
 app = FastAPI(title="Desserts API", version="1.0.0", root_path="/v1")
