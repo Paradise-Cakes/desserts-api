@@ -7,7 +7,7 @@ from src.routes import hello
 
 app = FastAPI(title="Desserts API", version="1.0.0", root_path="/v1")
 
-app.middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
