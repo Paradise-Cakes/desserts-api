@@ -28,4 +28,18 @@ resource "aws_lambda_function" "app" {
   }
 }
 
+resource "aws_lambda_function" "desserts_api_lambda_authorizer" {
+  image_uri     = local.lambda_image
+  package_type  = "Image"
+  function_name = "desserts-api-lambda-authorizer"
+  role          = aws_iam_role.desserts_api_role.arn
+
+  image_config {
+    command = ["src.api_authorizer.handler.lambda_handler"]
+  }
+
+  timeout     = 30
+  memory_size = 256
+}
+
 
