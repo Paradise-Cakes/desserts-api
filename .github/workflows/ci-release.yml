@@ -181,6 +181,7 @@ jobs:
           terraform apply --auto-approve tfplan.out
 
   integration-tests:
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     needs: tf-dev
 
