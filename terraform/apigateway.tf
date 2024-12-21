@@ -19,15 +19,15 @@ module "api_gateway" {
     }
     "POST" = {
       authorization = "CUSTOM"
-      authorizer_id = aws_lambda_function.desserts_api_lambda_authorizer.arn
+      authorizer_id = aws_api_gateway_authorizer.desserts_api_lambda_authorizer.id
     }
     "PATCH" = {
       authorization = "CUSTOM"
-      authorizer_id = aws_lambda_function.desserts_api_lambda_authorizer.arn
+      authorizer_id = aws_api_gateway_authorizer.desserts_api_lambda_authorizer.id
     }
     "DELETE" = {
       authorization = "CUSTOM"
-      authorizer_id = aws_lambda_function.desserts_api_lambda_authorizer.arn
+      authorizer_id = aws_api_gateway_authorizer.desserts_api_lambda_authorizer.id
     }
   }
 
@@ -44,4 +44,12 @@ module "api_gateway" {
   ]
 }
 EOF
+}
+
+resource "aws_api_gateway_authorizer" "desserts_api_lambda_authorizer" {
+  name                   = "desserts-api-authorizer"
+  rest_api_id            = aws_api_gateway_rest_api.rest_api.id
+  authorizer_uri         = aws_lambda_function.desserts_api_lambda_authorizer.invoke_arn
+  type                   = "REQUEST"
+  identity_source        = "method.request.header.Authorization"
 }
