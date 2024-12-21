@@ -1,5 +1,5 @@
 module "api_gateway" {
-  source = "git@github.com:Paradise-Cakes/pc-terraform-modules.git//apiGateway?ref=v1.9.2"
+  source = "git@github.com:Paradise-Cakes/pc-terraform-modules.git//apiGateway?ref=v1.9.3"
 
   app_arn                 = aws_lambda_function.app.arn
   app_name                = aws_lambda_function.app.function_name
@@ -15,6 +15,7 @@ module "api_gateway" {
   http_methods = {
     "GET" = {
       authorization = "NONE"
+      authorizer_id = ""
     }
     "POST" = {
       authorization = "CUSTOM"
