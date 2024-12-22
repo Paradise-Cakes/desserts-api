@@ -105,7 +105,10 @@ resource "aws_api_gateway_stage" "stage" {
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.rest_api.id
   depends_on = [
-    aws_api_gateway_integration.proxy,
+    aws_api_gateway_integration.get_desserts_integration,
+    aws_api_gateway_integration.post_desserts_integration,
+    aws_api_gateway_integration.patch_desserts_integration,
+    aws_api_gateway_integration.delete_desserts_integration,
     aws_api_gateway_integration.cors,
   ]
 
@@ -193,7 +196,10 @@ resource "aws_api_gateway_integration_response" "cors" {
   status_code = 200
 
   depends_on = [
-    aws_api_gateway_integration.proxy,
+    aws_api_gateway_integration.get_desserts_integration,
+    aws_api_gateway_integration.post_desserts_integration,
+    aws_api_gateway_integration.patch_desserts_integration,
+    aws_api_gateway_integration.delete_desserts_integration,
   ]
 
   response_parameters = {
