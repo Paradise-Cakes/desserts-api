@@ -11,11 +11,87 @@ resource "aws_api_gateway_resource" "proxy" {
   path_part   = "{proxy+}"
 }
 
-resource "aws_api_gateway_method" "proxy" {
+
+resource "aws_api_gateway_method" "get_desserts" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   resource_id   = aws_api_gateway_resource.proxy.id
-  http_method   = "ANY"
+  http_method   = "GET"
   authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "get_desserts_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+  resource_id             = aws_api_gateway_resource.proxy.id
+  http_method             = aws_api_gateway_method.get_desserts.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+}
+
+resource "aws_api_gateway_method" "post_desserts" {
+  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  resource_id   = aws_api_gateway_resource.proxy.id
+  http_method   = "POST"
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.lambda_authorizer.id
+}
+
+resource "aws_api_gateway_integration" "post_desserts_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+  resource_id             = aws_api_gateway_resource.proxy.id
+  http_method             = aws_api_gateway_method.post_desserts.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+
+  request_parameters = {
+    "integration.request.header.user-email"  = "context.user_email"
+    "integration.request.header.user-groups" = "context.user_groups"
+  }
+}
+
+resource "aws_api_gateway_method" "patch_desserts" {
+  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  resource_id   = aws_api_gateway_resource.proxy.id
+  http_method   = "PATCH"
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.lambda_authorizer.id
+}
+
+resource "aws_api_gateway_integration" "patch_desserts_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+  resource_id             = aws_api_gateway_resource.proxy.id
+  http_method             = aws_api_gateway_method.patch_desserts.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+
+  request_parameters = {
+    "integration.request.header.user-email"  = "context.user_email"
+    "integration.request.header.user-groups" = "context.user_groups"
+  }
+}
+
+resource "aws_api_gateway_method" "delete_desserts" {
+  rest_api_id   = aws_api_gateway_rest_api.rest_api.id
+  resource_id   = aws_api_gateway_resource.proxy.id
+  http_method   = "DELETE"
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.lambda_authorizer.id
+}
+
+resource "aws_api_gateway_integration" "delete_desserts_integration" {
+  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
+  resource_id             = aws_api_gateway_resource.proxy.id
+  http_method             = aws_api_gateway_method.delete_desserts.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.app.invoke_arn
+
+  request_parameters = {
+    "integration.request.header.user-email"  = "context.user_email"
+    "integration.request.header.user-groups" = "context.user_groups"
+  }
 }
 
 resource "aws_api_gateway_stage" "stage" {
@@ -52,20 +128,6 @@ resource "aws_api_gateway_base_path_mapping" "base_path_mapping" {
   stage_name  = aws_api_gateway_stage.stage.stage_name
   domain_name = aws_api_gateway_domain_name.domain_name.domain_name
   base_path   = aws_api_gateway_stage.stage.stage_name
-}
-
-resource "aws_api_gateway_integration" "proxy" {
-  rest_api_id             = aws_api_gateway_rest_api.rest_api.id
-  resource_id             = aws_api_gateway_resource.proxy.id
-  http_method             = aws_api_gateway_method.proxy.http_method
-  integration_http_method = "POST"
-  type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.app.invoke_arn
-
-  request_parameters = {
-    "integration.request.header.user-email"  = "context.user_email"
-    "integration.request.header.user-groups" = "context.user_groups"
-  }
 }
 
 resource "aws_api_gateway_rest_api_policy" "rest_api_policy" {
@@ -139,4 +201,14 @@ resource "aws_api_gateway_integration_response" "cors" {
     "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS,GET,PUT,DELETE,PATCH'"
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
+}
+
+resource "aws_api_gateway_authorizer" "lambda_authorizer" {
+  rest_api_id                      = aws_api_gateway_rest_api.rest_api.id
+  name                             = "lambda-authorizer"
+  type                             = "REQUEST"
+  authorizer_uri                   = aws_lambda_function.desserts_api_lambda_authorizer.invoke_arn
+  authorizer_credentials           = aws_iam_role.desserts_api_role.arn
+  authorizer_result_ttl_in_seconds = 300
+  identity_source                  = "method.request.header.Authorization"
 }
