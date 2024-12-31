@@ -50,7 +50,7 @@ resource "aws_iam_policy" "desserts_api_policy" {
       {
         Action   = "lambda:InvokeFunction",
         Effect   = "Allow",
-        Resource = aws_lambda_function.app.arn
+        Resource = [aws_lambda_function.app.arn, aws_lambda_function.desserts_api_lambda_authorizer.arn]
       },
       {
         Action = [

@@ -214,7 +214,6 @@ resource "aws_api_gateway_authorizer" "lambda_authorizer" {
   name                             = "lambda-authorizer"
   type                             = "REQUEST"
   authorizer_uri                   = aws_lambda_function.desserts_api_lambda_authorizer.invoke_arn
-  authorizer_credentials           = aws_iam_role.api_authorizer_role.arn
   authorizer_result_ttl_in_seconds = 300
   identity_source                  = "method.request.header.Authorization"
 }
