@@ -7,7 +7,7 @@ resource "aws_iam_role" "desserts_api_role" {
       Action = "sts:AssumeRole",
       Effect = "Allow",
       Principal = {
-        Service = ["lambda.amazonaws.com"]
+        Service = "lambda.amazonaws.com"
       }
     }]
   })
@@ -22,7 +22,13 @@ resource "aws_iam_role" "api_authorizer_role" {
       Action = "sts:AssumeRole",
       Effect = "Allow",
       Principal = {
-        Service = ["lambda.amazonaws.com", "apigateway.amazonaws.com"]
+        Service = "lambda.amazonaws.com"
+      }
+      }, {
+      Action = "sts:AssumeRole",
+      Effect = "Allow",
+      Principal = {
+        Service = "apigateway.amazonaws.com"
       }
     }]
   })
