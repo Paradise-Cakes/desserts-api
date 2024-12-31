@@ -8,7 +8,7 @@ logger = Logger()
 def lambda_handler(event, context):
     try:
         resource = event.get("methodArn")
-        token = event.get("authorizationToken").split("Bearer ")[1]
+        token = event.get("headers").get("Authorization").split("Bearer ")[1]
         decoded_token = jwt.decode(token, options={"verify_signature": False})
 
         user_email = decoded_token.get("email")

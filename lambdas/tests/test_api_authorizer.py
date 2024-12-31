@@ -14,7 +14,9 @@ def test_handler_grants_users_access(jwt_mock):
     }
 
     event = {
-        "authorizationToken": "Bearer token",
+        "headers": {
+            "Authorization": f"Bearer token",
+        },
         "methodArn": "arn:aws:execute-api:eu-west-1:123456789012:api-id/stage/GET/resource",
     }
 
@@ -45,7 +47,9 @@ def test_handler_exception_denies_access(jwt_mock):
 
     event = {
         "methodArn": "arn:aws:execute-api:eu-west-1:123456789012:api-id/stage/GET/resource",
-        "authorizationToken": "Bearer invalid-token",
+        "headers": {
+            "Authorization": f"Bearer token",
+        },
     }
     response = lambda_handler(event, default_context)
 
