@@ -213,7 +213,7 @@ resource "aws_api_gateway_authorizer" "lambda_authorizer" {
   rest_api_id                      = aws_api_gateway_rest_api.rest_api.id
   name                             = "lambda-authorizer"
   type                             = "REQUEST"
-  authorizer_uri                   = "arn:aws:apigateway:${var.region}:lambda:path/2015-03-31/functions/${aws_lambda_function.desserts_api_lambda_authorizer.arn}/invocations"
+  authorizer_uri                   = "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${aws_lambda_function.desserts_api_lambda_authorizer.arn}/invocations"
   authorizer_result_ttl_in_seconds = 300
   identity_source                  = "method.request.header.Authorization"
 }
