@@ -45,8 +45,7 @@ resource "aws_api_gateway_integration" "post_desserts_integration" {
   uri                     = aws_lambda_function.app.invoke_arn
 
   request_parameters = {
-    "integration.request.header.user-email"  = "context.user_email"
-    "integration.request.header.user-groups" = "context.user_groups"
+\    "integration.request.header.user-groups" = "context.user_groups"
   }
 }
 
@@ -67,8 +66,7 @@ resource "aws_api_gateway_integration" "patch_desserts_integration" {
   uri                     = aws_lambda_function.app.invoke_arn
 
   request_parameters = {
-    "integration.request.header.user-email"  = "context.user_email"
-    "integration.request.header.user-groups" = "context.user_groups"
+\    "integration.request.header.user-groups" = "context.user_groups"
   }
 }
 
@@ -89,7 +87,6 @@ resource "aws_api_gateway_integration" "delete_desserts_integration" {
   uri                     = aws_lambda_function.app.invoke_arn
 
   request_parameters = {
-    "integration.request.header.user-email"  = "context.user_email"
     "integration.request.header.user-groups" = "context.user_groups"
   }
 }
