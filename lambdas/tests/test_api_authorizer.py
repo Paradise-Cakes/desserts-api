@@ -36,7 +36,7 @@ def test_handler_grants_users_access(jwt_mock):
         },
         "context": {
             "user_sub": "anthony.soprano@gmail.com",
-            "user_groups": ["users"],
+            "user_groups": "users",
         },
     }
 
@@ -65,5 +65,5 @@ def test_handler_exception_denies_access(jwt_mock):
                 }
             ],
         },
-        "context": {"user_sub": None, "user_groups": []},
+        "context": {"user_sub": None, "user_groups": ""},
     }

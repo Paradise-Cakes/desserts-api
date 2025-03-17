@@ -32,7 +32,7 @@ def generate_policy(effect, resource, user_sub, user_groups):
         },
         "context": {
             "user_sub": user_sub,
-            "user_groups": user_groups if user_groups else [],
+            "user_groups": ",".join(user_groups) if user_groups else "",
         },
     }
     return policy
