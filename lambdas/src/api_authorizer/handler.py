@@ -8,11 +8,16 @@ logger = Logger()
 def lambda_handler(event, context):
     try:
         resource = event.get("methodArn")
+        logger.info("getting resource", resource=resource)
         token = event.get("headers").get("Authorization").split("Bearer ")[1]
+        logger.info("getting token", token=token)
         decoded_token = jwt.decode(token, options={"verify_signature": False})
+        logger.info("decoding token", decoded_token=decoded_token)
 
         user_email = decoded_token.get("email")
+        logger.info("getting user email", user_email=user_email)
         user_groups = decoded_token.get("cognito:groups", [])
+        logger.info("getting user groups", user_groups=user_groups)
 
         return generate_policy("Allow", resource, user_email, user_groups)
 
