@@ -106,8 +106,12 @@ def post_dessert(request: Request, body: PostDessertRequest):
             "base_price": Decimal(price.base_price).quantize(
                 Decimal("0.01"), rounding=ROUND_HALF_UP
             ),
-            "discount": Decimal(price.discount).quantize(
-                Decimal("0.01"), rounding=ROUND_HALF_UP
+            "discount": (
+                Decimal(price.discount).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP
+                )
+                if price.discount
+                else 0
             ),
         }
         for price in new_dessert.prices
