@@ -29,20 +29,23 @@ desserts_table = DynamoConnection(
     status_code=200,
     tags=["Desserts"],
 )
-def get_desserts(dessert_type: str):
-    logger.info(f"Getting desserts of type {dessert_type}")
+def get_desserts(dessert_type: str = None):
+    if dessert_type:
+        logger.info(f"Getting desserts of type {dessert_type}")
 
-    desserts_response = desserts_table.query(
-        IndexName="dessert_type_index",
-        KeyConditionExpression=Key("dessert_type").eq(dessert_type),
-    )
-
-    if not desserts_response.get("Items"):
-        raise HTTPException(
-            status_code=404, detail=f"No desserts found of type {dessert_type}"
+        desserts_response = desserts_table.query(
+            IndexName="dessert_type_index",
+            KeyConditionExpression=Key("dessert_type").eq(dessert_type),
         )
 
+    else:
+        logger.info("Getting all desserts")
+        desserts_response = desserts_table.scan()
+
     dessert_ids = [d["dessert_id"] for d in desserts_response.get("Items")]
+
+    if not dessert_ids:
+        return fastapi_gateway_response(200, {}, [])
 
     prices_response = dynamodb_client.batch_get_item(
         RequestItems={
