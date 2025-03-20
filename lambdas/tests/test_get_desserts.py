@@ -71,6 +71,26 @@ def test_handler_valid_event_get_desserts_of_dessert_type(
                             },
                         ]
                     },
+                    "prices": {
+                        "L": [
+                            {
+                                "M": {
+                                    "dessert_id": {"S": "DESSERT-1"},
+                                    "size": {"S": "6in"},
+                                    "base_price": {"N": "10.00"},
+                                    "discount": {"N": "0.00"},
+                                }
+                            },
+                            {
+                                "M": {
+                                    "dessert_id": {"S": "DESSERT-1"},
+                                    "size": {"S": "8in"},
+                                    "base_price": {"N": "15.00"},
+                                    "discount": {"N": "0.00"},
+                                }
+                            },
+                        ]
+                    },
                 },
                 {
                     "dessert_id": {"S": "DESSERT-2"},
@@ -110,6 +130,18 @@ def test_handler_valid_event_get_desserts_of_dessert_type(
                             },
                         ]
                     },
+                    "prices": {
+                        "L": [
+                            {
+                                "M": {
+                                    "dessert_id": {"S": "DESSERT-2"},
+                                    "size": {"S": "6in"},
+                                    "base_price": {"N": "10.00"},
+                                    "discount": {"N": "0.00"},
+                                }
+                            },
+                        ]
+                    },
                 },
             ]
         },
@@ -117,44 +149,6 @@ def test_handler_valid_event_get_desserts_of_dessert_type(
             "TableName": "desserts",
             "IndexName": "dessert_type_index",
             "KeyConditionExpression": Key("dessert_type").eq("cake"),
-        },
-    )
-
-    dynamo_stub.add_response(
-        "batch_get_item",
-        {
-            "Responses": {
-                "prices": [
-                    {
-                        "dessert_id": {"S": "DESSERT-1"},
-                        "size": {"S": "6in"},
-                        "base_price": {"N": "10.00"},
-                        "discount": {"N": "0.00"},
-                    },
-                    {
-                        "dessert_id": {"S": "DESSERT-2"},
-                        "size": {"S": "6in"},
-                        "base_price": {"N": "10.00"},
-                        "discount": {"N": "0.00"},
-                    },
-                    {
-                        "dessert_id": {"S": "DESSERT-1"},
-                        "size": {"S": "8in"},
-                        "base_price": {"N": "15.00"},
-                        "discount": {"N": "0.00"},
-                    },
-                ]
-            }
-        },
-        expected_params={
-            "RequestItems": {
-                "prices": {
-                    "Keys": [
-                        {"dessert_id": {"S": "DESSERT-1"}},
-                        {"dessert_id": {"S": "DESSERT-2"}},
-                    ]
-                }
-            }
         },
     )
 
@@ -304,6 +298,26 @@ def test_handler_valid_event_get_all_desserts(desserts_dynamodb_stub, dynamo_stu
                             },
                         ]
                     },
+                    "prices": {
+                        "L": [
+                            {
+                                "M": {
+                                    "dessert_id": {"S": "DESSERT-1"},
+                                    "size": {"S": "6in"},
+                                    "base_price": {"N": "10.00"},
+                                    "discount": {"N": "0.00"},
+                                }
+                            },
+                            {
+                                "M": {
+                                    "dessert_id": {"S": "DESSERT-1"},
+                                    "size": {"S": "8in"},
+                                    "base_price": {"N": "15.00"},
+                                    "discount": {"N": "0.00"},
+                                }
+                            },
+                        ]
+                    },
                 },
                 {
                     "dessert_id": {"S": "DESSERT-2"},
@@ -343,48 +357,22 @@ def test_handler_valid_event_get_all_desserts(desserts_dynamodb_stub, dynamo_stu
                             },
                         ]
                     },
+                    "prices": {
+                        "L": [
+                            {
+                                "M": {
+                                    "dessert_id": {"S": "DESSERT-2"},
+                                    "size": {"S": "6in"},
+                                    "base_price": {"N": "10.00"},
+                                    "discount": {"N": "0.00"},
+                                }
+                            },
+                        ]
+                    },
                 },
             ]
         },
         expected_params={"TableName": "desserts"},
-    )
-
-    dynamo_stub.add_response(
-        "batch_get_item",
-        {
-            "Responses": {
-                "prices": [
-                    {
-                        "dessert_id": {"S": "DESSERT-1"},
-                        "size": {"S": "6in"},
-                        "base_price": {"N": "10.00"},
-                        "discount": {"N": "0.00"},
-                    },
-                    {
-                        "dessert_id": {"S": "DESSERT-2"},
-                        "size": {"S": "6in"},
-                        "base_price": {"N": "10.00"},
-                        "discount": {"N": "0.00"},
-                    },
-                    {
-                        "dessert_id": {"S": "DESSERT-1"},
-                        "size": {"S": "8in"},
-                        "base_price": {"N": "15.00"},
-                        "discount": {"N": "0.00"},
-                    },
-                ]
-            }
-        },
-        expected_params={
-            "RequestItems": {
-                "prices": {
-                    "Keys": [
-                        {"dessert_id": {"S": "DESSERT-1"}},
-                        {"dessert_id": {"S": "DESSERT-2"}},
-                    ]
-                }
-            }
-        },
     )
 
     response = test_client.get("/v1/desserts")
