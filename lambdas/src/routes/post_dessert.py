@@ -128,6 +128,7 @@ def post_dessert(request: Request, body: PostDessertRequest):
     dessert_images_bucket = os.environ.get(
         "DESSERT_IMAGES_BUCKET_NAME", "pc-dessert-images-bucket-dev"
     )
+
     for image in new_dessert.images:
         image_id = str(uuid.uuid4())
         object_url = f"https://{dessert_images_bucket}.s3.amazonaws.com/{new_dessert.dessert_id}/{image_id}"
