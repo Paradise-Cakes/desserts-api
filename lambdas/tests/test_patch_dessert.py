@@ -540,15 +540,6 @@ def test_handler_patch_dessert_images_change_image_position(
         },
     )
 
-    # s3_stub.add_response(
-    #     "delete_object",
-    #     {},
-    #     expected_params={
-    #         "Bucket": "dessert-images",
-    #         "Key": f"00000000-0000-0000-0000-000000000001/IMAGE-1",
-    #     },
-    # )
-
     desserts_dynamodb_stub.add_response(
         "update_item",
         {
@@ -829,15 +820,6 @@ def test_handler_patch_dessert_images_add_image(
             }
         },
     )
-
-    # s3_stub.add_response(
-    #     "delete_object",
-    #     {},
-    #     expected_params={
-    #         "Bucket": "dessert-images",
-    #         "Key": f"00000000-0000-0000-0000-000000000001/IMAGE-1",
-    #     },
-    # )
 
     desserts_dynamodb_stub.add_response(
         "update_item",
