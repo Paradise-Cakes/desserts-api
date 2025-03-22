@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from freezegun import freeze_time
 
 from src.api import app
-from src.routes.patch_dessert import desserts_table
+from src.routes.patch_dessert import desserts_table, s3_client
 
 test_client = TestClient(app)
 
@@ -18,6 +18,13 @@ def desserts_dynamodb_stub():
     with Stubber(desserts_table.meta.client) as ddb_stubber:
         yield ddb_stubber
         ddb_stubber.assert_no_pending_responses()
+
+
+@pytest.fixture(autouse=True, scope="function")
+def s3_stub():
+    with Stubber(s3_client) as s3_stubber:
+        yield s3_stubber
+        s3_stubber.assert_no_pending_responses()
 
 
 @freeze_time("2024-12-12 12:00:00")
@@ -455,10 +462,7 @@ def test_handler_patch_dessert_not_found(desserts_dynamodb_stub):
     ],
 )
 def test_handler_patch_dessert_images(
-    mock_uuid,
-    mock_prices_table,
-    mock_s3_client,
-    desserts_dynamodb_stub,
+    mock_uuid, mock_prices_table, mock_s3_client, desserts_dynamodb_stub, s3_stub
 ):
     mock_batch_writer = MagicMock()
     mock_prices_table.batch_writer.__enter__.return_value = mock_batch_writer
@@ -517,6 +521,15 @@ def test_handler_patch_dessert_images(
         },
     )
 
+    s3_stub.add_response(
+        "delete_object",
+        {},
+        expected_params={
+            "Bucket": "dessert-images",
+            "Key": f"00000000-0000-0000-0000-000000000001/IMAGE-1",
+        },
+    )
+
     desserts_dynamodb_stub.add_response(
         "update_item",
         {
@@ -565,8 +578,12 @@ def test_handler_patch_dessert_images(
                     "L": [
                         {
                             "M": {
-                                "image_id": {"S": "IMAGE-1"},
-                                "url": {"S": "https://example.com/image1.jpg"},
+                                "image_id": {
+                                    "S": "00000000-0000-0000-0000-000000000002"
+                                },
+                                "url": {
+                                    "S": "https://dessert-images.s3.amazonaws.com/00000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-000000000002"
+                                },
                                 "upload_url": {"S": "https://example.com/upload-url"},
                                 "position": {"N": "1"},
                                 "file_name": {"S": "image1.jpg"},
@@ -576,10 +593,10 @@ def test_handler_patch_dessert_images(
                         {
                             "M": {
                                 "image_id": {
-                                    "S": "00000000-0000-0000-0000-000000000002"
+                                    "S": "00000000-0000-0000-0000-000000000003"
                                 },
                                 "url": {
-                                    "S": "https://dessert-images.s3.amazonaws.com/00000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-000000000002"
+                                    "S": "https://dessert-images.s3.amazonaws.com/00000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-000000000003"
                                 },
                                 "upload_url": {"S": "https://example.com/upload-url"},
                                 "position": {"N": "2"},
@@ -602,16 +619,16 @@ def test_handler_patch_dessert_images(
             "ExpressionAttributeValues": {
                 ":images": [
                     {
-                        "image_id": "IMAGE-1",
-                        "url": "https://example.com/image1.jpg",
+                        "image_id": "00000000-0000-0000-0000-000000000002",
+                        "url": "https://dessert-images.s3.amazonaws.com/00000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-000000000002",
                         "upload_url": "https://example.com/upload-url",
                         "position": 1,
                         "file_name": "image1.jpg",
                         "file_type": "jpg",
                     },
                     {
-                        "image_id": "00000000-0000-0000-0000-000000000002",
-                        "url": "https://dessert-images.s3.amazonaws.com/00000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-000000000002",
+                        "image_id": "00000000-0000-0000-0000-000000000003",
+                        "url": "https://dessert-images.s3.amazonaws.com/00000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-000000000003",
                         "upload_url": "https://example.com/upload-url",
                         "position": 2,
                         "file_name": "image2.jpg",
@@ -627,7 +644,10 @@ def test_handler_patch_dessert_images(
     response = test_client.patch(
         "/desserts/00000000-0000-0000-0000-000000000001",
         json={
-            "images": [{"file_name": "image2.jpg", "file_type": "jpg", "position": 2}]
+            "images": [
+                {"file_name": "image1.jpg", "file_type": "jpg", "position": 1},
+                {"file_name": "image2.jpg", "file_type": "jpg", "position": 2},
+            ]
         },
     )
 
@@ -659,16 +679,16 @@ def test_handler_patch_dessert_images(
             "ingredients": ["flour", "sugar", "cocoa", "butter", "eggs"],
             "images": [
                 {
-                    "image_id": "IMAGE-1",
-                    "url": "https://example.com/image1.jpg",
+                    "image_id": "00000000-0000-0000-0000-000000000002",
+                    "url": "https://dessert-images.s3.amazonaws.com/00000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-000000000002",
                     "position": 1,
                     "upload_url": "https://example.com/upload-url",
                     "file_name": "image1.jpg",
                     "file_type": "jpg",
                 },
                 {
-                    "image_id": "00000000-0000-0000-0000-000000000002",
-                    "url": "https://dessert-images.s3.amazonaws.com/00000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-000000000002",
+                    "image_id": "00000000-0000-0000-0000-000000000003",
+                    "url": "https://dessert-images.s3.amazonaws.com/00000000-0000-0000-0000-000000000001/00000000-0000-0000-0000-000000000003",
                     "position": 2,
                     "upload_url": "https://example.com/upload-url",
                     "file_name": "image2.jpg",

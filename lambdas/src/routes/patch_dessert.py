@@ -77,10 +77,6 @@ def patch_dessert(request: Request, body: PatchDessertRequest, dessert_id: str):
     if "Item" not in get_dessert_response:
         raise HTTPException(status_code=404, detail="Dessert not found")
 
-    existing_images = get_dessert_response["Item"].get("images", [])
-    new_images = [image.model_dump() for image in (body.images or [])]
-    merged_images = existing_images + new_images
-
     updated_dessert = {
         **body.model_dump(exclude_unset=True),
         "last_updated_at": int(arrow.utcnow().timestamp()),
@@ -90,20 +86,29 @@ def patch_dessert(request: Request, body: PatchDessertRequest, dessert_id: str):
         **updated_dessert,
     }
 
-    if "images" in updated_dessert or new_images:
+    if "images" in updated_dessert:
         dessert_images_bucket = os.environ.get(
             "DESSERT_IMAGES_BUCKET_NAME", "pc-dessert-images-bucket-dev"
         )
-        for image in merged_images:
-            if image.get("image_id") is None:
-                image_id = str(uuid.uuid4())
-                object_url = f"https://{dessert_images_bucket}.s3.amazonaws.com/{dessert_id}/{image_id}"
-                image["image_id"] = image_id
-                image["url"] = object_url
-                image["upload_url"] = generate_upload_url(
-                    dessert_id, image, dessert_images_bucket
+        if "images" in get_dessert_response["Item"]:
+            for image in get_dessert_response["Item"]["images"]:
+                s3_client.delete_object(
+                    Bucket=dessert_images_bucket,
+                    Key=f"{dessert_id}/{image['image_id']}",
                 )
-        update_expression_data["images"] = merged_images
+            logger.info(f"Deleted images for dessert: {dessert_id}")
+
+        updated_images = []
+        for image in updated_dessert.get("images"):
+            image_id = str(uuid.uuid4())
+            object_url = f"https://{dessert_images_bucket}.s3.amazonaws.com/{dessert_id}/{image_id}"
+            image["image_id"] = image_id
+            image["url"] = object_url
+            image["upload_url"] = generate_upload_url(
+                dessert_id, image, dessert_images_bucket
+            )
+            updated_images.append(image)
+        update_expression_data["images"] = updated_images
 
     if "prices" in updated_dessert:
         updated_dessert["prices"] = [
