@@ -11,6 +11,7 @@ from fastapi import APIRouter, Request
 from src.lib.dynamodb import DynamoConnection
 from src.lib.response import fastapi_gateway_response
 from src.models import Dessert, PostDessertRequest
+from src.models.desserts import Price
 
 logger = Logger(service="post_dessert")
 router = APIRouter()
@@ -98,28 +99,36 @@ def post_dessert(request: Request, body: PostDessertRequest):
         last_updated_at=int(arrow.utcnow().timestamp()),
     )
 
-    # TODO: FIGURE OUT HOW TO DO THIS IN A CLEANER WAY
-    formatted_prices = [
-        {
-            "dessert_id": new_dessert.dessert_id,
-            "size": price.size,
-            "base_price": Decimal(price.base_price).quantize(
-                Decimal("0.01"), rounding=ROUND_HALF_UP
-            ),
-            "discount": Decimal(price.discount).quantize(
-                Decimal("0.01"), rounding=ROUND_HALF_UP
-            ),
-        }
+    new_dessert.prices = [
+        Price(
+            dessert_id=new_dessert.dessert_id,
+            size=price.size,
+            base_price=price.base_price,
+            discount=price.discount if price.discount else 0,
+        )
         for price in new_dessert.prices
     ]
-    new_dessert.prices = formatted_prices
     with prices_table.batch_writer() as batch:
-        for price in formatted_prices:
-            batch.put_item(Item=price)
+        for price in new_dessert.prices:
+            formatted_base_price = Decimal(price.base_price).quantize(
+                Decimal(".01"), rounding=ROUND_HALF_UP
+            )
+            formatted_discount = Decimal(price.discount).quantize(
+                Decimal(".01"), rounding=ROUND_HALF_UP
+            )
+
+            batch.put_item(
+                Item={
+                    **price.clean(),
+                    "base_price": formatted_base_price,
+                    "discount": formatted_discount,
+                }
+            )
 
     dessert_images_bucket = os.environ.get(
         "DESSERT_IMAGES_BUCKET_NAME", "pc-dessert-images-bucket-dev"
     )
+
     for image in new_dessert.images:
         image_id = str(uuid.uuid4())
         object_url = f"https://{dessert_images_bucket}.s3.amazonaws.com/{new_dessert.dessert_id}/{image_id}"
@@ -129,7 +138,23 @@ def post_dessert(request: Request, body: PostDessertRequest):
             new_dessert.dessert_id, image, dessert_images_bucket
         )
 
-    desserts_table.put_item(Item={**new_dessert.clean()})
+    desserts_table.put_item(
+        Item={
+            **new_dessert.clean(),
+            "prices": [
+                {
+                    **price.clean(),
+                    "base_price": Decimal(price.base_price).quantize(
+                        Decimal(".01"), rounding=ROUND_HALF_UP
+                    ),
+                    "discount": Decimal(price.discount).quantize(
+                        Decimal(".01"), rounding=ROUND_HALF_UP
+                    ),
+                }
+                for price in new_dessert.prices
+            ],
+        }
+    )
     response = PostDessertResponse(**new_dessert.model_dump())
 
     logger.info(f"Created new dessert: {new_dessert}")

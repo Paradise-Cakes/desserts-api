@@ -8,22 +8,22 @@ logger = Logger()
 def lambda_handler(event, context):
     try:
         resource = event.get("methodArn")
-        token = event.get("authorizationToken").split("Bearer ")[1]
+        token = event.get("headers").get("Authorization").split("Bearer ")[1]
         decoded_token = jwt.decode(token, options={"verify_signature": False})
 
-        user_email = decoded_token.get("email")
+        user_sub = decoded_token.get("sub")
         user_groups = decoded_token.get("cognito:groups", [])
 
-        return generate_policy("Allow", resource, user_email, user_groups)
+        return generate_policy("Allow", resource, user_sub, user_groups)
 
     except Exception as e:
         logger.exception(e)
         return generate_policy("Deny", event["methodArn"], None, None)
 
 
-def generate_policy(effect, resource, user_email, user_groups):
+def generate_policy(effect, resource, user_sub, user_groups):
     policy = {
-        "principalId": user_email if user_email else "Unknown",
+        "principalId": user_sub if user_sub else "Unknown",
         "policyDocument": {
             "Version": "2012-10-17",
             "Statement": [
@@ -31,8 +31,8 @@ def generate_policy(effect, resource, user_email, user_groups):
             ],
         },
         "context": {
-            "user_email": user_email,
-            "user_groups": user_groups if user_groups else [],
+            "user_sub": user_sub,
+            "user_groups": ",".join(user_groups) if user_groups else "",
         },
     }
     return policy

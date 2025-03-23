@@ -10,15 +10,6 @@ from src.routes.delete_dessert import desserts_table, prices_table, s3_client
 test_client = TestClient(app)
 
 
-@pytest.fixture(autouse=True)
-def monkeypatch_env(monkeypatch):
-    monkeypatch.setenv("DYNAMODB_REGION", "us-east-1")
-    monkeypatch.setenv("DYNAMODB_ENDPOINT_URL", None)
-    monkeypatch.setenv("DYNAMODB_DESSERTS_TABLE_NAME", "desserts")
-    monkeypatch.setenv("DESSERT_IMAGES_BUCKET_NAME", "dessert-images")
-    monkeypatch.setenv("REGION", "us-east-1")
-
-
 @pytest.fixture(autouse=True, scope="function")
 def desserts_dynamodb_stub():
     with Stubber(desserts_table.meta.client) as ddb_stubber:

@@ -9,12 +9,14 @@ from tests.support import default_context
 @patch("src.api_authorizer.handler.jwt")
 def test_handler_grants_users_access(jwt_mock):
     jwt_mock.decode.return_value = {
-        "email": "anthony.soprano@gmail.com",
+        "sub": "anthony.soprano@gmail.com",
         "cognito:groups": ["users"],
     }
 
     event = {
-        "authorizationToken": "Bearer token",
+        "headers": {
+            "Authorization": f"Bearer token",
+        },
         "methodArn": "arn:aws:execute-api:eu-west-1:123456789012:api-id/stage/GET/resource",
     }
 
@@ -33,8 +35,8 @@ def test_handler_grants_users_access(jwt_mock):
             ],
         },
         "context": {
-            "user_email": "anthony.soprano@gmail.com",
-            "user_groups": ["users"],
+            "user_sub": "anthony.soprano@gmail.com",
+            "user_groups": "users",
         },
     }
 
@@ -45,7 +47,9 @@ def test_handler_exception_denies_access(jwt_mock):
 
     event = {
         "methodArn": "arn:aws:execute-api:eu-west-1:123456789012:api-id/stage/GET/resource",
-        "authorizationToken": "Bearer invalid-token",
+        "headers": {
+            "Authorization": f"Bearer token",
+        },
     }
     response = lambda_handler(event, default_context)
 
@@ -61,5 +65,5 @@ def test_handler_exception_denies_access(jwt_mock):
                 }
             ],
         },
-        "context": {"user_email": None, "user_groups": []},
+        "context": {"user_sub": None, "user_groups": ""},
     }

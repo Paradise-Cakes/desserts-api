@@ -29,43 +29,21 @@ desserts_table = DynamoConnection(
     status_code=200,
     tags=["Desserts"],
 )
-def get_desserts(dessert_type: str):
-    logger.info(f"Getting desserts of type {dessert_type}")
+def get_desserts(dessert_type: str = None):
+    if dessert_type:
+        logger.info(f"Getting desserts of type {dessert_type}")
 
-    desserts_response = desserts_table.query(
-        IndexName="dessert_type_index",
-        KeyConditionExpression=Key("dessert_type").eq(dessert_type),
-    )
-
-    if not desserts_response.get("Items"):
-        raise HTTPException(
-            status_code=404, detail=f"No desserts found of type {dessert_type}"
+        desserts_response = desserts_table.query(
+            IndexName="dessert_type_index",
+            KeyConditionExpression=Key("dessert_type").eq(dessert_type),
         )
 
-    dessert_ids = [d["dessert_id"] for d in desserts_response.get("Items")]
+    else:
+        logger.info("Getting all desserts")
+        desserts_response = desserts_table.scan()
 
-    prices_response = dynamodb_client.batch_get_item(
-        RequestItems={
-            "prices": {
-                "Keys": [
-                    {"dessert_id": {"S": dessert_id}} for dessert_id in dessert_ids
-                ]
-            }
-        }
-    )
-
-    prices = prices_response.get("Responses").get("prices")
-    deserializer = TypeDeserializer()
-    deserialized_prices = [
-        {k: deserializer.deserialize(v) for k, v in price.items()} for price in prices
-    ]
-
-    for dessert in desserts_response.get("Items"):
-        dessert["prices"] = [
-            p
-            for p in deserialized_prices
-            if p.get("dessert_id") == dessert.get("dessert_id")
-        ]
+    if not desserts_response.get("Items"):
+        return fastapi_gateway_response(200, {}, [])
 
     desserts = [Dessert(**d).clean() for d in desserts_response.get("Items")]
 

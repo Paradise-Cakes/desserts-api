@@ -14,17 +14,6 @@ from src.routes.post_dessert import dessert_type_count_table, desserts_table
 test_client = TestClient(app)
 
 
-@pytest.fixture(autouse=True)
-def monkeypatch_env(monkeypatch):
-    monkeypatch.setenv("DYNAMODB_REGION", "us-east-1")
-    monkeypatch.setenv("DYNAMODB_ENDPOINT_URL", "http://localhost:8000")
-    monkeypatch.setenv("DYNAMODB_DESSERTS_TABLE_NAME", "desserts")
-    monkeypatch.setenv("DYNAMODB_PRICES_TABLE_NAME", "prices")
-    monkeypatch.setenv("DYNAMODB_DESSERT_TYPE_COUNT_TABLE_NAME", "dessert_type_count")
-    monkeypatch.setenv("DESSERT_IMAGES_BUCKET_NAME", "dessert-images")
-    monkeypatch.setenv("REGION", "us-east-1")
-
-
 @pytest.fixture(autouse=True, scope="function")
 def desserts_dynamodb_stub():
     with Stubber(desserts_table.meta.client) as ddb_stubber:
