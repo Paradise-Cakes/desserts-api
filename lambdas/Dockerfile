@@ -1,13 +1,23 @@
 FROM public.ecr.aws/lambda/python:3.11
 
-COPY . ${LAMBDA_TASK_ROOT}/
+# Set working dir
+WORKDIR ${LAMBDA_TASK_ROOT}
 
-RUN cd ${LAMBDA_TASK_ROOT} && \
-    python -m pip install poetry==1.4.2 && \
-    poetry export -f requirements.txt --without-hashes > requirements.txt && \
+# Copy only necessary files for dependency resolution first (for caching)
+COPY poetry.lock pyproject.toml ./
+
+# Install Poetry
+RUN python -m pip install poetry==1.4.2
+
+# Export requirements from poetry.lock
+RUN poetry export -f requirements.txt --without-hashes > requirements.txt && \
     sed -i '/^uuid==/d' requirements.txt && \
-    python -m pip install -r requirements.txt
+    pip install -r requirements.txt
 
+# Copy the rest of the application code
+COPY . .
+
+# Add Datadog extension
 COPY datadog-extension /opt/extensions/datadog-agent
 RUN chmod +x /opt/extensions/datadog-agent
 
