@@ -18,8 +18,9 @@ RUN poetry lock && \
 # Copy the rest of the code
 COPY . .
 
-# Datadog extension
-COPY datadog-extension /opt/extensions/datadog-agent
+# Download Datadog Lambda Extension for x86_64
+ADD https://github.com/DataDog/datadog-lambda-extension/releases/latest/download/datadog-agent-linux-amd64 /opt/extensions/datadog-agent
+
 RUN chmod +x /opt/extensions/datadog-agent
 
 CMD ["src.api.lambda_handler"]
