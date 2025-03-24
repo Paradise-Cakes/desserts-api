@@ -20,9 +20,12 @@ COPY . .
 # Download and unzip the Datadog Lambda Extension for x86_64
 ADD https://codeload.github.com/DataDog/datadog-lambda-extension/zip/refs/tags/v75 /opt/extensions/datadog.zip
 
-RUN unzip /opt/extensions/datadog.zip -d /opt/extensions/ && \
-    chmod +x /opt/extensions/datadog-agent && \
-    rm /opt/extensions/datadog.zip
+# Install unzip and extract the Datadog extension
+RUN yum install -y unzip && \
+    unzip /opt/extensions/datadog.zip -d /opt/extensions/ && \
+    chmod +x /opt/extensions/datadog-lambda-extension-75/datadog-agent && \
+    mv /opt/extensions/datadog-lambda-extension-75/datadog-agent /opt/extensions/datadog-agent && \
+    rm -rf /opt/extensions/datadog.zip /opt/extensions/datadog-lambda-extension-75
 
 # Lambda handler
 CMD ["src.api.lambda_handler"]
