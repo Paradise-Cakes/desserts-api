@@ -76,15 +76,16 @@ jobs:
         id: cache-datadog-extension
         uses: actions/cache@v3
         with:
-          path: lambdas/datadog-agent
-          key: datadog-extension-x86_64-v1
+          path: lambdas/datadog-extension
+          key: datadog-extension-x86_64-v2
 
-      - name: Download Datadog Lambda Extension (if not cached)
+      - name: Download and unzip Datadog Lambda Extension (if not cached)
         if: steps.cache-datadog-extension.outputs.cache-hit != 'true'
         run: |
-          curl -L -o lambdas/datadog-agent \
-            https://github.com/DataDog/datadog-lambda-extension/releases/latest/download/datadog-agent-linux-amd64
-          chmod +x lambdas/datadog-agent
+          mkdir -p lambdas/datadog-extension
+          curl -L -o datadog-extension.zip https://github.com/DataDog/datadog-lambda-extension/releases/latest/download/datadog-lambda-extension-x86_64.zip
+          unzip datadog-extension.zip -d lambdas/datadog-extension
+          rm datadog-extension.zip
 
       - name: Docker build, tag us-east-1 - DEV
         env:

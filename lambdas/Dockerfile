@@ -17,11 +17,12 @@ RUN poetry export -f requirements.txt --without-hashes > requirements.txt && \
 # Copy the rest of the application code
 COPY . .
 
-# Download Datadog Lambda Extension for x86_64
-ADD https://github.com/DataDog/datadog-lambda-extension/releases/latest/download/datadog-agent-linux-amd64 /opt/extensions/datadog-agent
+# Download and unzip the Datadog Lambda Extension for x86_64
+ADD https://github.com/DataDog/datadog-lambda-extension/releases/latest/download/datadog_lambda_extension_x86_64.zip /opt/extensions/datadog.zip
 
-# Ensure the extension is executable
-RUN chmod +x /opt/extensions/datadog-agent
+RUN unzip /opt/extensions/datadog.zip -d /opt/extensions/ && \
+    chmod +x /opt/extensions/datadog-agent && \
+    rm /opt/extensions/datadog.zip
 
 # Lambda handler
 CMD ["src.api.lambda_handler"]
