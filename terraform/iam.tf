@@ -122,3 +122,13 @@ resource "aws_iam_role_policy_attachment" "api_authorizer_attachment" {
   policy_arn = aws_iam_policy.desserts_api_policy.arn
   role       = aws_iam_role.api_authorizer_role.name
 }
+
+resource "aws_iam_role_policy_attachment" "datadog_kms_decrypt_attachment" {
+  policy_arn = aws_iam_policy.datadog_kms_decrypt.arn
+  role       = aws_iam_role.desserts_api_role.name
+}
+
+resource "aws_iam_role_policy_attachment" "datadog_kms_decrypt_attachment_authorizer" {
+  policy_arn = aws_iam_policy.datadog_kms_decrypt.arn
+  role       = aws_iam_role.api_authorizer_role.name
+}
