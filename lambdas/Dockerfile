@@ -1,5 +1,5 @@
 # Use Datadog's Lambda Extension base image
-FROM public.ecr.aws/datadog/lambda-extension:python3.11
+FROM public.ecr.aws/datadog/lambda-extension:75
 
 # Set working directory
 WORKDIR ${LAMBDA_TASK_ROOT}
