@@ -98,6 +98,21 @@ resource "aws_iam_policy" "desserts_api_policy" {
   })
 }
 
+resource "aws_iam_policy" "datadog_kms_decrypt" {
+  name = "DatadogKMSDecrypt"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = "kms:Decrypt",
+        Resource = "arn:aws:kms:us-east-1:${data.aws_caller_identity.current.account_id}:key/${var.datadog_kms_api_key}"
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "api_gateway_attachment" {
   policy_arn = aws_iam_policy.desserts_api_policy.arn
   role       = aws_iam_role.desserts_api_role.name

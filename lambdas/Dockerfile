@@ -8,4 +8,7 @@ RUN cd ${LAMBDA_TASK_ROOT} && \
     sed -i '/^uuid==/d' requirements.txt && \
     python -m pip install -r requirements.txt
 
+COPY datadog-extension /opt/extensions/datadog-agent
+RUN chmod +x /opt/extensions/datadog-agent
+
 CMD ["src.api.lambda_handler"]

@@ -1,5 +1,14 @@
 locals {
   lambda_image = "${data.aws_ecr_repository.desserts_api_lambdas.repository_url}:${var.docker_image_tag}"
+  datadog_env_vars = {
+    DD_KMS_API_KEY            = var.datadog_kms_api_key
+    DD_ENV                    = var.environment
+    DD_SERVICE                = "desserts-api"
+    DD_VERSION                = lambda_image
+    DD_LOGS_ENABLED           = "true"
+    DD_TRACE_ENABLED          = "true"
+    DD_EXTENSION_LOGS_ENABLED = "true"
+  }
 }
 
 resource "aws_lambda_function" "app" {
@@ -16,7 +25,7 @@ resource "aws_lambda_function" "app" {
   }
 
   environment {
-    variables = {
+    variables = merge(local.datadog_env_vars, {
       DYNAMODB_REGION                        = "us-east-1"
       DYNAMODB_ENDPOINT_URL                  = "https://dynamodb.us-east-1.amazonaws.com"
       DYNAMODB_DESSERTS_TABLE_NAME           = aws_dynamodb_table.desserts.name
@@ -24,7 +33,7 @@ resource "aws_lambda_function" "app" {
       DYNAMODB_PRICES_TABLE_NAME             = aws_dynamodb_table.prices.name
       DESSERT_IMAGES_BUCKET_NAME             = aws_s3_bucket.dessert_images_bucket.bucket
       REGION                                 = "us-east-1"
-    }
+    })
   }
 }
 
