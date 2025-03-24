@@ -1,22 +1,27 @@
-# Use Datadog's Lambda Extension base image
-FROM public.ecr.aws/datadog/lambda-extension:75
+# Stage 1: Pull the Datadog Lambda Extension binary
+FROM public.ecr.aws/datadog/lambda-extension:latest as datadog-extension
+
+# Stage 2: Your Lambda base image
+FROM public.ecr.aws/lambda/python:3.11
 
 # Set working directory
 WORKDIR ${LAMBDA_TASK_ROOT}
 
-# Install Poetry
-RUN pip install poetry==1.4.2
-
-# Copy project files
+# Copy only poetry files to leverage Docker layer caching
 COPY pyproject.toml poetry.lock ./
 
-# Install dependencies
-RUN poetry export -f requirements.txt --without-hashes > requirements.txt && \
+# Install Poetry and dependencies
+RUN pip install poetry==1.4.2 && \
+    poetry export -f requirements.txt --without-hashes > requirements.txt && \
     sed -i '/^uuid==/d' requirements.txt && \
     pip install -r requirements.txt
 
-# Copy source code (after dependencies for layer caching)
+# Copy app code
 COPY . .
 
-# Set the handler
+# Copy the Datadog agent binary from the first stage
+COPY --from=datadog-extension /opt/extensions/datadog-agent /opt/extensions/datadog-agent
+
+RUN chmod +x /opt/extensions/datadog-agent
+
 CMD ["src.api.lambda_handler"]
