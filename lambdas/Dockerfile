@@ -18,7 +18,7 @@ RUN poetry export -f requirements.txt --without-hashes > requirements.txt && \
 COPY . .
 
 # Download and unzip the Datadog Lambda Extension for x86_64
-ADD https://github.com/DataDog/datadog-lambda-extension/releases/latest/download/datadog_lambda_extension_x86_64.zip /opt/extensions/datadog.zip
+ADD https://codeload.github.com/DataDog/datadog-lambda-extension/zip/refs/tags/v75 /opt/extensions/datadog.zip
 
 RUN unzip /opt/extensions/datadog.zip -d /opt/extensions/ && \
     chmod +x /opt/extensions/datadog-agent && \

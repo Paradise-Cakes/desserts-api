@@ -83,7 +83,7 @@ jobs:
         if: steps.cache-datadog-extension.outputs.cache-hit != 'true'
         run: |
           mkdir -p lambdas/datadog-extension
-          curl -L -o datadog-extension.zip https://github.com/DataDog/datadog-lambda-extension/releases/latest/download/datadog-lambda-extension-x86_64.zip
+          curl -L -o datadog-extension.zip https://codeload.github.com/DataDog/datadog-lambda-extension/zip/refs/tags/v75
           unzip datadog-extension.zip -d lambdas/datadog-extension
           rm datadog-extension.zip
 
