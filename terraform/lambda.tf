@@ -8,7 +8,7 @@ locals {
     DD_LOGS_ENABLED           = "true"
     DD_TRACE_ENABLED          = "true"
     DD_EXTENSION_LOGS_ENABLED = "true"
-    DD_LOG_LEVEL              = "DEBUG"
+    DD_SITE                   = "us5.datadoghq.com"
   }
 }
 
