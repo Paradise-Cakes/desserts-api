@@ -47,6 +47,11 @@ resource "aws_lambda_function" "desserts_api_lambda_authorizer" {
     command = ["src.api_authorizer.handler.lambda_handler"]
   }
 
+  environment {
+    variables = merge(local.datadog_env_vars, {
+    })
+  }
+
   timeout     = 30
   memory_size = 256
 }
