@@ -4,7 +4,7 @@ locals {
     DD_KMS_API_KEY            = var.datadog_kms_api_key
     DD_ENV                    = var.environment
     DD_SERVICE                = "desserts-api"
-    DD_VERSION                = "${data.aws_ecr_repository.desserts_api_lambdas.repository_url}:${var.docker_image_tag}"
+    DD_VERSION                = var.docker_image_tag
     DD_LOGS_ENABLED           = "true"
     DD_TRACE_ENABLED          = "true"
     DD_EXTENSION_LOGS_ENABLED = "true"
