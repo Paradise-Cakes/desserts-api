@@ -107,7 +107,7 @@ resource "aws_iam_policy" "datadog_kms_decrypt" {
       {
         Effect   = "Allow",
         Action   = "kms:Decrypt",
-        Resource = "arn:aws:kms:us-east-1:${data.aws_caller_identity.current.account_id}:key/${var.datadog_kms_api_key}"
+        Resource = "arn:aws:kms:us-east-1:${data.aws_caller_identity.current.account_id}:key/*"
       }
     ]
   })
