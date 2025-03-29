@@ -104,7 +104,9 @@ def patch_dessert(request: Request, body: PatchDessertRequest, dessert_id: str):
 
         if "images" in get_dessert_response["Item"]:
             for image in get_dessert_response["Item"]["images"]:
-                if image["image_id"] not in [img["image_id"] for img in updated_images]:
+                if image["image_id"] not in [
+                    img["image_id"] for img in updated_images
+                ] and image.get("upload_url"):
                     s3_client.delete_object(
                         Bucket=dessert_images_bucket,
                         Key=f"{dessert_id}/{image['image_id']}",

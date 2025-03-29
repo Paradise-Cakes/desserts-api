@@ -129,10 +129,11 @@ def post_dessert(request: Request, body: PostDessertRequest):
     )
 
     for image in new_dessert.images:
+        image_id = str(uuid.uuid4())
+        image.image_id = image_id
+
         if not image.url:
-            image_id = str(uuid.uuid4())
             object_url = f"https://{dessert_images_bucket}.s3.amazonaws.com/{new_dessert.dessert_id}/{image_id}"
-            image.image_id = image_id
             image.url = object_url
             image.upload_url = generate_upload_url(
                 new_dessert.dessert_id, image, dessert_images_bucket
