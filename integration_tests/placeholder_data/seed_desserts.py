@@ -28,9 +28,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "6 inch", "base_price": 5.99},
+            {"size": "8 inch", "base_price": 7.99},
+            {"size": "10 inch", "base_price": 9.99},
         ],
         "ingredients": ["flour", "sugar", "cocoa powder", "eggs", "butter"],
         "images": [
@@ -56,9 +56,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "6 inch", "base_price": 5.99},
+            {"size": "8 inch", "base_price": 7.99},
+            {"size": "10 inch", "base_price": 9.99},
         ],
         "ingredients": ["flour", "sugar", "eggs", "butter", "vanilla"],
         "images": [
@@ -84,9 +84,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "6 inch", "base_price": 5.99},
+            {"size": "8 inch", "base_price": 7.99},
+            {"size": "10 inch", "base_price": 9.99},
         ],
         "ingredients": ["flour", "sugar", "cocoa powder", "eggs", "butter", "red dye"],
         "images": [
@@ -112,9 +112,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 4.99},
-            {"size": '8"', "base_price": 6.99},
-            {"size": '10"', "base_price": 8.99},
+            {"size": "6 inch", "base_price": 4.99},
+            {"size": "8 inch", "base_price": 6.99},
+            {"size": "10 inch", "base_price": 8.99},
         ],
         "ingredients": ["flour", "sugar", "butter", "eggs", "lemon"],
         "images": [
@@ -140,9 +140,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 6.99},
-            {"size": '8"', "base_price": 8.99},
-            {"size": '10"', "base_price": 10.99},
+            {"size": "6 inch", "base_price": 6.99},
+            {"size": "8 inch", "base_price": 8.99},
+            {"size": "10 inch", "base_price": 10.99},
         ],
         "ingredients": ["cream cheese", "sugar", "eggs", "graham crackers"],
         "images": [
@@ -168,9 +168,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "6 inch", "base_price": 5.99},
+            {"size": "8 inch", "base_price": 7.99},
+            {"size": "10 inch", "base_price": 9.99},
         ],
         "ingredients": ["flour", "sugar", "carrots", "eggs", "butter"],
         "images": [
@@ -196,9 +196,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "6 inch", "base_price": 5.99},
+            {"size": "8 inch", "base_price": 7.99},
+            {"size": "10 inch", "base_price": 9.99},
         ],
         "ingredients": ["flour", "sugar", "eggs", "butter", "pineapple"],
         "images": [
@@ -224,9 +224,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "6 inch", "base_price": 5.99},
+            {"size": "8 inch", "base_price": 7.99},
+            {"size": "10 inch", "base_price": 9.99},
         ],
         "ingredients": ["flour", "sugar", "eggs", "butter", "strawberries"],
         "images": [
@@ -252,9 +252,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "6 inch", "base_price": 5.99},
+            {"size": "8 inch", "base_price": 7.99},
+            {"size": "10 inch", "base_price": 9.99},
         ],
         "ingredients": ["flour", "sugar", "eggs", "butter", "food coloring"],
         "images": [
@@ -280,9 +280,9 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "6 inch", "base_price": 5.99},
+            {"size": "8 inch", "base_price": 7.99},
+            {"size": "10 inch", "base_price": 9.99},
         ],
         "ingredients": ["flour", "sugar", "eggs", "butter", "Oreos"],
         "images": [
@@ -308,9 +308,7 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "Dozen", "base_price": 5.99},
         ],
         "ingredients": ["flour", "sugar", "butter", "chocolate chips", "eggs"],
         "images": [
@@ -336,9 +334,7 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "Dozen", "base_price": 5.99},
         ],
         "ingredients": ["flour", "sugar", "butter", "peanut butter", "eggs"],
         "images": [
@@ -364,9 +360,7 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "Dozen", "base_price": 5.99},
         ],
         "ingredients": ["flour", "sugar", "butter", "eggs"],
         "images": [
@@ -392,9 +386,7 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "Dozen", "base_price": 5.99},
         ],
         "ingredients": ["flour", "sugar", "butter", "cinnamon", "eggs"],
         "images": [
@@ -420,9 +412,8 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "Half Dozen", "base_price": 5.99},
+            {"size": "Dozen", "base_price": 7.99},
         ],
         "ingredients": [
             "almond flour",
@@ -453,9 +444,8 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "Half Dozen", "base_price": 5.99},
+            {"size": "Dozen", "base_price": 7.99},
         ],
         "ingredients": ["flour", "sugar", "butter", "eggs", "Lucky Charms"],
         "images": [
@@ -481,9 +471,8 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "Half Dozen", "base_price": 5.99},
+            {"size": "Dozen", "base_price": 7.99},
         ],
         "ingredients": ["flour", "sugar", "cocoa powder", "eggs", "butter"],
         "images": [
@@ -509,9 +498,8 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "Half Dozen", "base_price": 5.99},
+            {"size": "Dozen", "base_price": 7.99},
         ],
         "ingredients": ["flour", "sugar", "eggs", "butter", "vanilla"],
         "images": [
@@ -537,9 +525,8 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "Half Dozen", "base_price": 5.99},
+            {"size": "Dozen", "base_price": 7.99},
         ],
         "ingredients": ["flour", "sugar", "eggs", "butter", "strawberries"],
         "images": [
@@ -565,9 +552,7 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "9 inch", "base_price": 5.99},
         ],
         "ingredients": ["coconut", "sugar", "eggs", "graham crackers"],
         "images": [
@@ -593,9 +578,7 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "9 inch", "base_price": 5.99},
         ],
         "ingredients": ["key limes", "sugar", "eggs", "graham crackers"],
         "images": [
@@ -621,9 +604,7 @@ desserts = [
         "last_updated_at": 1690000000,
         "visible": True,
         "prices": [
-            {"size": '6"', "base_price": 5.99},
-            {"size": '8"', "base_price": 7.99},
-            {"size": '10"', "base_price": 9.99},
+            {"size": "9 inch", "base_price": 5.99},
         ],
         "ingredients": ["apples", "sugar", "cinnamon", "butter"],
         "images": [
@@ -659,6 +640,7 @@ for dessert in get_desserts_response:
             "Content-Type": "application/json",
         },
     )
+    print(f"Deleted dessert: {dessert['name']}")
 
 for dessert in desserts:
     response = requests.post(

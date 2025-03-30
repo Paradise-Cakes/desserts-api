@@ -30,6 +30,8 @@ class Dessert(Base):
     prices: Optional[List[Price]] = []
     ingredients: Optional[List[str]] = []
     images: Optional[List[Image]] = []
+    special_tag: Optional[str] = None
+    secondary_special_tag: Optional[str] = None
 
 
 class PostDessertRequest(Base):
@@ -39,6 +41,9 @@ class PostDessertRequest(Base):
     prices: Optional[List[Price]] = []
     ingredients: Optional[List[str]] = []
     images: Optional[List[Image]] = []
+    visible: Optional[bool] = False
+    special_tag: Optional[str] = None
+    secondary_special_tag: Optional[str] = None
 
 
 class PatchDessertRequest(Base):
@@ -48,4 +53,6 @@ class PatchDessertRequest(Base):
     dessert_type: Optional[str] = None
     ingredients: Optional[List[str]] = []
     images: Optional[List[Image]] = []
-    visible: Optional[bool] = None
+    visible: Optional[bool] = False
+    special_tag: Optional[str] = None
+    secondary_special_tag: Optional[str] = None
