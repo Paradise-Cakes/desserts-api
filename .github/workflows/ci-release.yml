@@ -72,6 +72,21 @@ jobs:
         id: login-ecr-east
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Cache Datadog Lambda Extension
+        id: cache-datadog-extension
+        uses: actions/cache@v3
+        with:
+          path: lambdas/datadog-extension
+          key: datadog-extension-x86_64-v2
+
+      - name: Download and unzip Datadog Lambda Extension (if not cached)
+        if: steps.cache-datadog-extension.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p lambdas/datadog-extension
+          curl -L -o datadog-extension.zip https://codeload.github.com/DataDog/datadog-lambda-extension/zip/refs/tags/v75
+          unzip datadog-extension.zip -d lambdas/datadog-extension
+          rm datadog-extension.zip
+
       - name: Docker build, tag us-east-1 - DEV
         env:
           REGISTRY: ${{ steps.login-ecr-east.outputs.registry }}
@@ -170,6 +185,7 @@ jobs:
           TF_VAR_region: us-east-1
           TF_VAR_docker_image_tag: "${{env.BRANCH_NAME}}-${{env.SHORT_SHA}}"
           TF_VAR_short_version: "${{env.SHORT_SHA}}"
+          TF_VAR_datadog_kms_api_key: ${{ secrets.DATADOG_KMS_API_KEY_DEV }}
         run: |
           cd ${GITHUB_WORKSPACE}/terraform
           terraform plan --out tfplan.out

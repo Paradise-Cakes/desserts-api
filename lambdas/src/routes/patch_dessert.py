@@ -5,17 +5,16 @@ from decimal import ROUND_HALF_UP, Decimal
 
 import arrow
 import boto3
-from aws_lambda_powertools import Logger
 from boto3.dynamodb.conditions import Attr
 from fastapi import APIRouter, Request
 from fastapi.exceptions import HTTPException
 
 from src.lib.dynamodb import DynamoConnection, update_attributes_expression
+from src.lib.logger import logger
 from src.lib.response import fastapi_gateway_response
 from src.models import Dessert, PatchDessertRequest
 from src.models.desserts import Price
 
-logger = Logger()
 router = APIRouter()
 s3_client = boto3.client("s3")
 
@@ -105,7 +104,9 @@ def patch_dessert(request: Request, body: PatchDessertRequest, dessert_id: str):
 
         if "images" in get_dessert_response["Item"]:
             for image in get_dessert_response["Item"]["images"]:
-                if image["image_id"] not in [img["image_id"] for img in updated_images]:
+                if image["image_id"] not in [
+                    img["image_id"] for img in updated_images
+                ] and image.get("upload_url"):
                     s3_client.delete_object(
                         Bucket=dessert_images_bucket,
                         Key=f"{dessert_id}/{image['image_id']}",

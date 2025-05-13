@@ -5,15 +5,14 @@ from decimal import ROUND_HALF_UP, Decimal
 
 import arrow
 import boto3
-from aws_lambda_powertools import Logger
 from fastapi import APIRouter, Request
 
 from src.lib.dynamodb import DynamoConnection
+from src.lib.logger import logger
 from src.lib.response import fastapi_gateway_response
 from src.models import Dessert, PostDessertRequest
 from src.models.desserts import Price
 
-logger = Logger(service="post_dessert")
 router = APIRouter()
 s3_client = boto3.client("s3")
 
@@ -131,12 +130,14 @@ def post_dessert(request: Request, body: PostDessertRequest):
 
     for image in new_dessert.images:
         image_id = str(uuid.uuid4())
-        object_url = f"https://{dessert_images_bucket}.s3.amazonaws.com/{new_dessert.dessert_id}/{image_id}"
         image.image_id = image_id
-        image.url = object_url
-        image.upload_url = generate_upload_url(
-            new_dessert.dessert_id, image, dessert_images_bucket
-        )
+
+        if not image.url:
+            object_url = f"https://{dessert_images_bucket}.s3.amazonaws.com/{new_dessert.dessert_id}/{image_id}"
+            image.url = object_url
+            image.upload_url = generate_upload_url(
+                new_dessert.dessert_id, image, dessert_images_bucket
+            )
 
     desserts_table.put_item(
         Item={

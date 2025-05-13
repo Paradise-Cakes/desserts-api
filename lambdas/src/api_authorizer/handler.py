@@ -1,7 +1,6 @@
 import jwt
-from aws_lambda_powertools import Logger
 
-logger = Logger()
+from src.lib.logger import logger
 
 
 @logger.inject_lambda_context(log_event=True)
