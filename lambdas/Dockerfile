@@ -24,4 +24,4 @@ COPY --from=datadog-extension /opt/extensions/datadog-agent /opt/extensions/data
 
 RUN chmod +x /opt/extensions/datadog-agent
 
-CMD ["src.api.lambda_handler"]
+CMD ["datadog_lambda.handler.handler"]

@@ -32,6 +32,7 @@ python-dotenv = "^1.0.1"
 uuid = "^1.30"
 pyjwt = "^2.10.1"
 aws-lambda-context = "^1.1.0"
+datadog-lambda = "^6.109.0"
 
 [tool.poetry.group.dev.dependencies]
 httpx = "^0.27.0"
