@@ -13,27 +13,6 @@ resource "aws_iam_role" "desserts_api_role" {
   })
 }
 
-resource "aws_iam_role" "api_authorizer_role" {
-  name = "api-authorizer-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole",
-      Effect = "Allow",
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      }
-      }, {
-      Action = "sts:AssumeRole",
-      Effect = "Allow",
-      Principal = {
-        Service = "apigateway.amazonaws.com"
-      }
-    }]
-  })
-}
-
 resource "aws_iam_policy" "desserts_api_policy" {
   name        = "desserts-api-policy"
   description = "desserts api policy"
@@ -46,11 +25,6 @@ resource "aws_iam_policy" "desserts_api_policy" {
         ],
         Effect   = "Allow",
         Resource = "arn:aws:execute-api:us-east-1:${data.aws_caller_identity.current.account_id}:*/*/*/*"
-      },
-      {
-        Action   = "lambda:InvokeFunction",
-        Effect   = "Allow",
-        Resource = [aws_lambda_function.app.arn, aws_lambda_function.desserts_api_lambda_authorizer.arn]
       },
       {
         Action = [
@@ -118,17 +92,7 @@ resource "aws_iam_role_policy_attachment" "api_gateway_attachment" {
   role       = aws_iam_role.desserts_api_role.name
 }
 
-resource "aws_iam_role_policy_attachment" "api_authorizer_attachment" {
-  policy_arn = aws_iam_policy.desserts_api_policy.arn
-  role       = aws_iam_role.api_authorizer_role.name
-}
-
 resource "aws_iam_role_policy_attachment" "datadog_kms_decrypt_attachment" {
   policy_arn = aws_iam_policy.datadog_kms_decrypt.arn
   role       = aws_iam_role.desserts_api_role.name
-}
-
-resource "aws_iam_role_policy_attachment" "datadog_kms_decrypt_attachment_authorizer" {
-  policy_arn = aws_iam_policy.datadog_kms_decrypt.arn
-  role       = aws_iam_role.api_authorizer_role.name
 }

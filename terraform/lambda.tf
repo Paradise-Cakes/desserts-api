@@ -39,36 +39,9 @@ resource "aws_lambda_function" "app" {
   }
 }
 
-resource "aws_lambda_function" "desserts_api_lambda_authorizer" {
-  image_uri     = local.lambda_image
-  package_type  = "Image"
-  function_name = "desserts-api-lambda-authorizer"
-  role          = aws_iam_role.api_authorizer_role.arn
-
-  image_config {
-    command = ["datadog_lambda.handler.handler"]
-  }
-
-  environment {
-    variables = merge(local.datadog_env_vars, {
-      DD_LAMBDA_HANDLER = "src.api_authorizer.handler.lambda_handler"
-    })
-  }
-
-  timeout     = 30
-  memory_size = 256
-}
-
 resource "aws_lambda_permission" "allow_api_gateway_handler" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.app.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.rest_api.execution_arn}/*"
-}
-
-resource "aws_lambda_permission" "allow_api_gateway_authorizer" {
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.desserts_api_lambda_authorizer.function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.rest_api.execution_arn}/*"
 }
