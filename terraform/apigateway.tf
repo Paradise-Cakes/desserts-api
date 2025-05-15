@@ -32,7 +32,8 @@ resource "aws_api_gateway_method" "post_desserts" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   resource_id   = aws_api_gateway_resource.proxy.id
   http_method   = "POST"
-  authorization = "NONE"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
 resource "aws_api_gateway_integration" "post_desserts_integration" {
@@ -52,7 +53,8 @@ resource "aws_api_gateway_method" "patch_desserts" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   resource_id   = aws_api_gateway_resource.proxy.id
   http_method   = "PATCH"
-  authorization = "NONE"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
 resource "aws_api_gateway_integration" "patch_desserts_integration" {
@@ -72,7 +74,8 @@ resource "aws_api_gateway_method" "delete_desserts" {
   rest_api_id   = aws_api_gateway_rest_api.rest_api.id
   resource_id   = aws_api_gateway_resource.proxy.id
   http_method   = "DELETE"
-  authorization = "NONE"
+  authorization = "COGNITO_USER_POOLS"
+  authorizer_id = aws_api_gateway_authorizer.cognito_authorizer.id
 }
 
 resource "aws_api_gateway_integration" "delete_desserts_integration" {
@@ -203,11 +206,10 @@ resource "aws_api_gateway_integration_response" "cors" {
   }
 }
 
-resource "aws_api_gateway_authorizer" "lambda_authorizer" {
-  rest_api_id                      = aws_api_gateway_rest_api.rest_api.id
-  name                             = "lambda-authorizer"
-  type                             = "REQUEST"
-  authorizer_uri                   = "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${aws_lambda_function.desserts_api_lambda_authorizer.arn}/invocations"
-  authorizer_result_ttl_in_seconds = 300
-  identity_source                  = "method.request.header.Authorization"
+resource "aws_api_gateway_authorizer" "cognito_authorizer" {
+  name            = "cognito-authorizer-us-east-1"
+  type            = "COGNITO_USER_POOLS"
+  rest_api_id     = aws_api_gateway_rest_api.rest_api.id
+  identity_source = "method.request.header.Authorization"
+  provider_arns   = [data.aws_cognito_user_pool.paradise_cakes_user_pool.arn]
 }
