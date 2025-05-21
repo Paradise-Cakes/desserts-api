@@ -65,7 +65,7 @@ jobs:
       - name: Configure AWS credentials for us-east-1 - DEV
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::010526276358:role/desserts-api-development-terraform-deployer
+          role-to-assume: arn:aws:iam::010526276358:role/desserts-api-tf-deployer-dev
           aws-region: us-east-1
 
       - name: Login to Amazon ECR us-east-1 - DEV
@@ -116,7 +116,7 @@ jobs:
       - name: Configure AWS credentials for us-east-1 - PROD
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::132899756990:role/desserts-api-terraform-deployer
+          role-to-assume: arn:aws:iam::132899756990:role/desserts-api-tf-deployer-prod
           aws-region: us-east-1
 
       - name: Login to Amazon ECR us-east-1 - PROD
@@ -222,7 +222,7 @@ jobs:
       - name: Configure AWS credentials for us-east-1
         uses: aws-actions/configure-aws-credentials@v3
         with:
-          role-to-assume: arn:aws:iam::132899756990:role/desserts-api-terraform-deployer
+          role-to-assume: arn:aws:iam::132899756990:role/desserts-api-tf-deployer-prod
           aws-region: us-east-1
 
       - name: Setup Terraform
