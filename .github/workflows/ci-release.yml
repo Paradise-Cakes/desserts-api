@@ -197,7 +197,6 @@ jobs:
           terraform apply --auto-approve tfplan.out
 
   tf-prod:
-    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     environment: prod
     concurrency: tf-prod
@@ -252,6 +251,7 @@ jobs:
           terraform plan --out tfplan.out
 
       - name: Terraform Apply - PROD
+        if: ${{ github.ref == 'refs/heads/main' }}
         id: tf-apply-prod
         run: |
           cd ${GITHUB_WORKSPACE}/terraform
