@@ -1,9 +1,10 @@
 import os
 
 import boto3
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.exceptions import HTTPException
 
+from src.auth.groups import require_admin_user
 from src.lib.dynamodb import DynamoConnection
 from src.lib.logger import logger
 from src.lib.response import fastapi_gateway_response
@@ -37,7 +38,7 @@ class DeleteDessertResponse(Dessert):
     response_model=DeleteDessertResponse,
     tags=["Desserts"],
 )
-def delete_dessert(request: Request, dessert_id: str):
+def delete_dessert(request: Request, dessert_id: str, _=Depends(require_admin_user)):
     logger.info(f"Deleting dessert with ID: {dessert_id}")
 
     get_dessert_response = desserts_table.get_item(Key={"dessert_id": dessert_id})

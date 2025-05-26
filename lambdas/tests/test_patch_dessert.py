@@ -29,7 +29,9 @@ def s3_stub():
 
 @freeze_time("2024-12-12 12:00:00")
 @patch("src.routes.patch_dessert.prices_table")
-def test_handler_patch_dessert(mock_prices_table, desserts_dynamodb_stub):
+def test_handler_patch_dessert(
+    mock_prices_table, desserts_dynamodb_stub, override_admin
+):
     mock_batch_writer = MagicMock()
     mock_prices_table.batch_writer.__enter__.return_value = mock_batch_writer
 
@@ -207,7 +209,9 @@ def test_handler_patch_dessert(mock_prices_table, desserts_dynamodb_stub):
 
 @freeze_time("2024-12-12 12:00:00")
 @patch("src.routes.patch_dessert.prices_table")
-def test_handler_patch_dessert_prices(mock_prices_table, desserts_dynamodb_stub):
+def test_handler_patch_dessert_prices(
+    mock_prices_table, desserts_dynamodb_stub, override_admin
+):
     mock_batch_writer = MagicMock()
     mock_prices_table.batch_writer.__enter__.return_value = mock_batch_writer
 
@@ -428,7 +432,7 @@ def test_handler_patch_dessert_prices(mock_prices_table, desserts_dynamodb_stub)
 
 
 @freeze_time("2024-12-12 12:00:00")
-def test_handler_patch_dessert_not_found(desserts_dynamodb_stub):
+def test_handler_patch_dessert_not_found(desserts_dynamodb_stub, override_admin):
     desserts_dynamodb_stub.add_response(
         "get_item",
         {},
@@ -461,7 +465,7 @@ def test_handler_patch_dessert_not_found(desserts_dynamodb_stub):
     ],
 )
 def test_handler_patch_dessert_images_change_image_position(
-    mock_uuid, mock_prices_table, mock_s3_client, desserts_dynamodb_stub
+    mock_uuid, mock_prices_table, mock_s3_client, desserts_dynamodb_stub, override_admin
 ):
     mock_batch_writer = MagicMock()
     mock_prices_table.batch_writer.__enter__.return_value = mock_batch_writer
@@ -762,7 +766,7 @@ def test_handler_patch_dessert_images_change_image_position(
     ],
 )
 def test_handler_patch_dessert_images_add_image(
-    mock_uuid, mock_prices_table, mock_s3_client, desserts_dynamodb_stub
+    mock_uuid, mock_prices_table, mock_s3_client, desserts_dynamodb_stub, override_admin
 ):
     mock_batch_writer = MagicMock()
     mock_prices_table.batch_writer.__enter__.return_value = mock_batch_writer
@@ -1010,7 +1014,12 @@ def test_handler_patch_dessert_images_add_image(
     ],
 )
 def test_handler_patch_dessert_images_remove_image(
-    mock_uuid, mock_prices_table, mock_s3_client, desserts_dynamodb_stub, s3_stub
+    mock_uuid,
+    mock_prices_table,
+    mock_s3_client,
+    desserts_dynamodb_stub,
+    s3_stub,
+    override_admin,
 ):
     mock_batch_writer = MagicMock()
     mock_prices_table.batch_writer.__enter__.return_value = mock_batch_writer

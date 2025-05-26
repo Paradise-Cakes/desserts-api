@@ -6,9 +6,10 @@ from decimal import ROUND_HALF_UP, Decimal
 import arrow
 import boto3
 from boto3.dynamodb.conditions import Attr
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 from fastapi.exceptions import HTTPException
 
+from src.auth.groups import require_admin_user
 from src.lib.dynamodb import DynamoConnection, update_attributes_expression
 from src.lib.logger import logger
 from src.lib.response import fastapi_gateway_response
@@ -68,7 +69,12 @@ def generate_upload_url(dessert_id, dessert_image, bucket_name):
     response_model=PatchDessertResponse,
     tags=["Desserts"],
 )
-def patch_dessert(request: Request, body: PatchDessertRequest, dessert_id: str):
+def patch_dessert(
+    request: Request,
+    body: PatchDessertRequest,
+    dessert_id: str,
+    _=Depends(require_admin_user),
+):
     logger.info(f"Updating dessert: {dessert_id}")
     logger.append_keys(dessert_id=dessert_id)
 

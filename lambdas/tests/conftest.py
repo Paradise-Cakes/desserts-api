@@ -1,6 +1,10 @@
 import json
 
 import pytest
+from fastapi import HTTPException
+
+from src.api import app
+from src.auth.groups import require_admin_user
 
 
 @pytest.fixture(autouse=True)
@@ -31,3 +35,23 @@ def assert_responses_equal(r1, status_code=None, r2=None, headers=None):
 
     if r2:
         assert r1.json() == r2
+
+
+@pytest.fixture
+def override_admin():
+    def mock_require_admin_user():
+        return
+
+    app.dependency_overrides[require_admin_user] = mock_require_admin_user
+    yield
+    app.dependency_overrides = {}
+
+
+@pytest.fixture
+def override_unauthorized():
+    def mock_require_admin_user_denied():
+        raise HTTPException(status_code=404, detail="Not found")
+
+    app.dependency_overrides[require_admin_user] = mock_require_admin_user_denied
+    yield
+    app.dependency_overrides = {}

@@ -31,7 +31,9 @@ def s3_stub():
         s3_stubber.assert_no_pending_responses()
 
 
-def test_handler_delete_dessert(desserts_dynamodb_stub, prices_dynamodb_stub, s3_stub):
+def test_handler_delete_dessert(
+    desserts_dynamodb_stub, prices_dynamodb_stub, s3_stub, override_admin
+):
     desserts_dynamodb_stub.add_response(
         "get_item",
         {
@@ -192,7 +194,7 @@ def test_handler_delete_dessert(desserts_dynamodb_stub, prices_dynamodb_stub, s3
     )
 
 
-def test_handler_delete_dessert_not_found(desserts_dynamodb_stub):
+def test_handler_delete_dessert_not_found(desserts_dynamodb_stub, override_admin):
     desserts_dynamodb_stub.add_response(
         "get_item",
         {},
@@ -208,4 +210,14 @@ def test_handler_delete_dessert_not_found(desserts_dynamodb_stub):
         response,
         404,
         {"detail": "Dessert not found"},
+    )
+
+
+def test_handler_delete_dessert_unauthorized(override_unauthorized):
+    response = test_client.delete("/desserts/00000000-0000-0000-0000-000000000001")
+
+    pytest.helpers.assert_responses_equal(
+        response,
+        404,
+        {"detail": "Not found"},
     )
