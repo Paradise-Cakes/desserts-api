@@ -67,6 +67,16 @@ resource "aws_iam_policy" "desserts_api_policy" {
           "arn:aws:s3:::desserts-images",
           "arn:aws:s3:::desserts-images/*"
         ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchCheckLayerAvailability"
+        ],
+        Resource = "*"
       }
     ]
   })
