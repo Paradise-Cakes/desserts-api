@@ -71,10 +71,7 @@ resource "aws_iam_policy" "desserts_api_policy" {
       {
         Effect = "Allow",
         Action = [
-          "ecr:GetAuthorizationToken",
-          "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchCheckLayerAvailability"
+          "ecr:*"
         ],
         Resource = "*"
       }
