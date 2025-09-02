@@ -15,9 +15,7 @@ resource "aws_ecr_repository_policy" "desserts_api_repo_policy" {
           Service = "lambda.amazonaws.com"
         },
         Action = [
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer"
+          "ecr:*",
         ],
         Condition = {
           StringLike = {
