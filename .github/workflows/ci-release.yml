@@ -196,6 +196,7 @@ jobs:
           TF_LOG: DEBUG
         run: |
           cd ${GITHUB_WORKSPACE}/terraform
+          terraform apply -target=aws_lambda_function.app
           terraform apply --auto-approve tfplan.out
 
   tf-prod:
