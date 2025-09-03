@@ -192,6 +192,8 @@ jobs:
 
       - name: Terraform Apply - DEV
         id: tf-apply-dev
+        env:
+          TF_LOG: DEBUG
         run: |
           cd ${GITHUB_WORKSPACE}/terraform
           terraform apply --auto-approve tfplan.out
