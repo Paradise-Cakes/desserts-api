@@ -200,7 +200,7 @@ jobs:
           TF_VAR_datadog_kms_api_key: ${{ secrets.DATADOG_KMS_API_KEY_DEV }}
         run: |
           cd ${GITHUB_WORKSPACE}/terraform
-          terraform apply -target=aws_lambda_function.app
+          terraform apply -target=aws_lambda_function.app --auto-approve
           terraform apply --auto-approve tfplan.out
 
   tf-prod:
