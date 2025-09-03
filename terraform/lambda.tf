@@ -1,5 +1,5 @@
 locals {
-  lambda_image = "${data.aws_ecr_repository.desserts_api_lambdas.repository_url}:${var.docker_image_tag}"
+  lambda_image = "${data.aws_ecr_repository.desserts_api.repository_url}@${data.aws_ecr_image.desserts_api.image_digest}"
   datadog_env_vars = {
     DD_KMS_API_KEY            = var.datadog_kms_api_key
     DD_ENV                    = var.environment
