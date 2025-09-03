@@ -178,18 +178,6 @@ jobs:
             --backend-config="bucket=desserts-dev-api-tfstate" \
             --backend-config="key=desserts-dev-api.tfstate"
 
-      - name: Terraform Apply (code first)
-        env:
-          TF_LOG: DEBUG
-          TF_VAR_environment: dev
-          TF_VAR_region: us-east-1
-          TF_VAR_docker_image_tag: "${{env.BRANCH_NAME}}-${{env.SHORT_SHA}}"
-          TF_VAR_short_version: "${{env.SHORT_SHA}}"
-          TF_VAR_datadog_kms_api_key: ${{ secrets.DATADOG_KMS_API_KEY_DEV }}
-        run: |
-          cd ${GITHUB_WORKSPACE}/terraform
-          terraform apply -target=aws_lambda_function.app --auto-approve
-
       - name: Terraform Plan - DEV
         id: tf-plan-dev
         env:
@@ -205,7 +193,6 @@ jobs:
       - name: Terraform Apply - DEV
         id: tf-apply-dev
         env:
-          TF_LOG: DEBUG
           TF_VAR_environment: dev
           TF_VAR_region: us-east-1
           TF_VAR_docker_image_tag: "${{env.BRANCH_NAME}}-${{env.SHORT_SHA}}"
@@ -256,6 +243,18 @@ jobs:
           terraform init \
             --backend-config="bucket=desserts-api-tfstate" \
             --backend-config="key=desserts-api.tfstate"
+
+      - name: Terraform Apply (code first)
+        env:
+          TF_LOG: DEBUG
+          TF_VAR_environment: prod
+          TF_VAR_region: us-east-1
+          TF_VAR_docker_image_tag: "${{env.BRANCH_NAME}}-${{env.SHORT_SHA}}"
+          TF_VAR_short_version: "${{env.SHORT_SHA}}"
+          TF_VAR_datadog_kms_api_key: ${{ secrets.DATADOG_KMS_API_KEY_DEV }}
+        run: |
+          cd ${GITHUB_WORKSPACE}/terraform
+          terraform apply -target=aws_lambda_function.app --auto-approve
 
       - name: Terraform Plan - PROD
         id: tf-plan-prod
