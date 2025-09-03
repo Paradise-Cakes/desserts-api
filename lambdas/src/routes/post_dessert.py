@@ -5,8 +5,9 @@ from decimal import ROUND_HALF_UP, Decimal
 
 import arrow
 import boto3
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
 
+from src.auth.groups import require_admin_user
 from src.lib.dynamodb import DynamoConnection
 from src.lib.logger import logger
 from src.lib.response import fastapi_gateway_response
@@ -61,7 +62,9 @@ def generate_upload_url(dessert_id, dessert_image, bucket_name):
     response_model=PostDessertResponse,
     tags=["Desserts"],
 )
-def post_dessert(request: Request, body: PostDessertRequest):
+def post_dessert(
+    request: Request, body: PostDessertRequest, _=Depends(require_admin_user)
+):
     logger.info("Creating new dessert")
     dessert_type = "DESSERT"
 

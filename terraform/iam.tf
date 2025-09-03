@@ -67,6 +67,13 @@ resource "aws_iam_policy" "desserts_api_policy" {
           "arn:aws:s3:::desserts-images",
           "arn:aws:s3:::desserts-images/*"
         ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "ecr:*"
+        ],
+        Resource = "*"
       }
     ]
   })
@@ -85,6 +92,31 @@ resource "aws_iam_policy" "datadog_kms_decrypt" {
       }
     ]
   })
+}
+
+resource "aws_iam_policy" "ecr_pull" {
+  name = "lambda-ecr-pull"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Sid    = "AllowEcrPull"
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken", # account-scoped
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_role_ecr_pull_attachment" {
+  role       = aws_iam_role.desserts_api_role.name
+  policy_arn = aws_iam_policy.ecr_pull.arn
 }
 
 resource "aws_iam_role_policy_attachment" "api_gateway_attachment" {

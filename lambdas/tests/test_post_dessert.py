@@ -47,6 +47,7 @@ def test_handler_valid_event_existing_dessert_type(
     mock_s3_client,
     desserts_dynamodb_stub,
     desserts_type_count_dynamodb_stub,
+    override_admin,
 ):
     mock_batch_writer = MagicMock()
     mock_prices_table.batch_writer.__enter__.return_value = mock_batch_writer
@@ -215,6 +216,7 @@ def test_handler_valid_event_new_dessert_type(
     mock_s3_client,
     desserts_dynamodb_stub,
     desserts_type_count_dynamodb_stub,
+    override_admin,
 ):
     mock_batch_writer = MagicMock()
     mock_prices_table.batch_writer.__enter__.return_value = mock_batch_writer
