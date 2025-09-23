@@ -36,12 +36,11 @@ resource "aws_opensearch_domain" "pcakes_opensearch" {
     Version = "2012-10-17",
     Statement = [{
       Effect    = "Allow",
-      Principal = { AWS = "*" },
-      Action    = "es:*",
+      Principal = "*",
+      Action    = ["es:ESHttpGet", "es:ESHttpPut", "es:ESHttpPost", "es:ESHttpDelete", "es:ESHttpHead"],
       Resource  = "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.me.account_id}:domain/${local.opensearch_domain_name}/*",
       Condition = {
-        StringEquals = { "aws:PrincipalAccount" : data.aws_caller_identity.me.account_id },
-        IpAddress    = { "aws:SourceIp" : ["99.145.200.165/32"] }
+        IpAddress = { "aws:SourceIp" : ["99.145.200.165/32"] }
       }
     }]
   })
